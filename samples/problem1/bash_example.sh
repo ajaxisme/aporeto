@@ -3,6 +3,7 @@
 USAGE="Usage: $(basename "$0") --create-filename=<filename> [--no-prompt] [--verbose]"
 
 INVALID=YES #Show usage prompt
+VERBOSE=NO #Default
 for i in "$@"
 do
 case $i in
@@ -52,26 +53,33 @@ fi
 STATES=( Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada 'New Hampshire' 'New Jersey' 'New Mexico' 'New York' 'North Carolina' 'North Dakota' Ohio Oklahoma Oregon Pennsylvania 'Rhode Island' 'South Carolina' 'South Dakota' Tennessee Texas Utah Vermont Virginia Washington 'West Virginia' Wisconsin Wyoming )
 
 function write_to_file {
-	#states=$( IFS=$'\n'; echo "${STATES[*]}" )
-	#echo $states > $FILENAME
-	( IFS=$'\n'; echo "${STATES[*]}" ) > $FILENAME
+	if [ "$1" = "YES" ]; then
+		echo "File removed"
+	fi
+
+	echo "New file created"
+	( IFS=$'\n'; echo "${STATES[*]}" ) > $FILENAME # Write states to file line by line
 	exit 0
 }
 
 if [ -f $FILENAME ]; then
+	if [ "$VERBOSE" = "YES" ]; then
+		echo "File already exists"
+	fi
 	if [ "$NO_PROMPT" = "YES" ]; then
-		write_to_file
+		# No prompt, overwrite
+		write_to_file YES
 	else
-		while true; do
+		while true; do # do this while response is not y/n 
 			read -p "File exists. Overwrite (y/n) ?" prompt
 			case $prompt in
-				[y]) echo ; write_to_file ;;
-				[n]) echo ; exit 0 ;;
-				*) echo "Invalid input"
+				[y]) echo ; write_to_file YES;; # overwrite the file
+				[n]) echo ; exit 0 ;; # do not overwrite, exit
+				*) echo "Invalid input" # Invalid input
 			esac
 		done 
 	fi
 else
-	write_to_file	
+	write_to_file NO # File doesnt exist, create new	
 fi
 
