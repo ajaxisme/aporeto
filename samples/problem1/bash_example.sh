@@ -1,0 +1,77 @@
+#! /bin/bash
+
+USAGE="Usage: $(basename "$0") --create-filename=<filename> [--no-prompt] [--verbose]"
+
+INVALID=YES #Show usage prompt
+for i in "$@"
+do
+case $i in
+	--create-file=*)
+	FILENAME="${i#*=}"
+	INVALID=NO
+	shift
+	;;
+	--no-prompt)
+	NO_PROMPT=YES
+	INVALID=NO
+	shift
+	;;
+	--verbose)
+	VERBOSE=YES
+	INVALID=NO
+	shift
+	;;
+	--help|-h)
+	HELP=YES
+	INVALID=NO
+	shift
+	;;
+	*)
+	INVALID=NO
+	;;
+esac
+done
+
+#Check for Invalid command
+if [ "$INVALID" = "YES" ]; then
+	echo "Invalid Command"
+	echo $USAGE
+	exit 1 
+fi
+
+#Check for Help command
+if [ "$HELP" = "YES" ]; then
+	echo $USAGE
+	echo "where: "
+	echo "<filename> - file to write the contents to"
+	echo "--no-prompt - No prompt if <filename> exists"
+	echo "--verbose - Verbose"
+	exit 0
+fi
+
+STATES=( Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada 'New Hampshire' 'New Jersey' 'New Mexico' 'New York' 'North Carolina' 'North Dakota' Ohio Oklahoma Oregon Pennsylvania 'Rhode Island' 'South Carolina' 'South Dakota' Tennessee Texas Utah Vermont Virginia Washington 'West Virginia' Wisconsin Wyoming )
+
+function write_to_file {
+	#states=$( IFS=$'\n'; echo "${STATES[*]}" )
+	#echo $states > $FILENAME
+	( IFS=$'\n'; echo "${STATES[*]}" ) > $FILENAME
+	exit 0
+}
+
+if [ -f $FILENAME ]; then
+	if [ "$NO_PROMPT" = "YES" ]; then
+		write_to_file
+	else
+		while true; do
+			read -p "File exists. Overwrite (y/n) ?" prompt
+			case $prompt in
+				[y]) echo ; write_to_file ;;
+				[n]) echo ; exit 0 ;;
+				*) echo "Invalid input"
+			esac
+		done 
+	fi
+else
+	write_to_file	
+fi
+
