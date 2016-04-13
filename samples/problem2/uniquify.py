@@ -1,13 +1,14 @@
 #!/usr/bin/python
-import optparse
-import mmh3
+from optparse import OptionParser
+import hashlib
 
 class Uniquify:
 
-	def __init__(self, inputfile, outputfile):
+	def __init__(self, options):
 		self.unique_hash_list = []
-		self.inputfile = inputfile
-		self.outputfile = outputfile
+		self.inputfile = options.filename
+		self.outputfile = options.output_filename
+		self.verbose = options.verbose
 		self.prepare_files()
 		self.remove_duplicates()
 
@@ -24,7 +25,7 @@ class Uniquify:
 
 	def already_seen(self, line):
 		# Calculate hash of line, check if already seen, return boolean
-		hash_val = mmh3.hash64(line)
+		hash_val = hashlib.md5(line).hexdigest()
 		if hash_val in self.unique_hash_list:
 			return True
 		else:
@@ -33,6 +34,8 @@ class Uniquify:
 
 	def write_to_output(self, line):
 		# write contents to outputfile
+		if self.verbose:
+			print "Writing: %s"%line
 		self.outfd.write(line)
 
 	def __del__(self):
@@ -41,4 +44,14 @@ class Uniquify:
 		self.outfd.close()
 
 if __name__ == "__main__":
-	uniq = Uniquify("big_file.txt", "output.txt")
+	
+	usage = "usage: %prog --file=<filename> --output=<output-filename> [-v|--verbose]"
+	parser = OptionParser(usage)
+	parser.add_option("--file", dest="filename", help="input filename", metavar="FILE")
+	parser.add_option("--output", dest="output_filename", help="output filename to write to", metavar="FILE")
+	parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="Write to stdout")
+	(options, args) = parser.parse_args()
+
+	if not options.filename or not options.output_filename:
+		parser.error("Incorrect Usage")
+	uniq = Uniquify(options)
