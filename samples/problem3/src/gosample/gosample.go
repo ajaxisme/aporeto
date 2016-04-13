@@ -44,9 +44,20 @@ func count_words (words []string) map[string]int {
 	return word_counts
 }
 
-func write_to_file (word_counts map[string]int) {
+func write_to_file (word_counts map[string]int, filename string) {
+
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+
 	for word, word_count := range word_counts {
-		fmt.Printf("%v %v\n", word, word_count)
+		if _, err = f.WriteString("%v %v\n", word, word_count); err != nil {
+			panic(err)
+		}
+		//fmt.Printf("%v %v\n", word, word_count)
 	}
 }
 
@@ -54,5 +65,5 @@ func main() {
 	url := "https://raw.githubusercontent.com/aporeto-inc/internship2016/master/samples/problem2/uniquified_file.txt"
 
 	content := readURL(url)
-	write_to_file(count_words(get_words(content)))	
+	write_to_file(count_words(get_words(content)), "output")	
 }
