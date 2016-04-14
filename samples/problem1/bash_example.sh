@@ -1,34 +1,30 @@
-#! /bin/bash
+#!/bin/bash
 
 USAGE="Usage: $(basename "$0") --create-filename=<filename> [--no-prompt] [--verbose]"
 
-INVALID=YES #Show usage prompt
+INVALID=NO #Show usage prompt
 VERBOSE=NO #Default
 for i in "$@"
 do
 case $i in
 	--create-file=*)
 	FILENAME="${i#*=}"
-	INVALID=NO
 	shift
 	;;
 	--no-prompt)
 	NO_PROMPT=YES
-	INVALID=NO
 	shift
 	;;
 	--verbose)
 	VERBOSE=YES
-	INVALID=NO
 	shift
 	;;
 	--help|-h)
 	HELP=YES
-	INVALID=NO
 	shift
 	;;
 	*)
-	INVALID=NO
+    INVALID=YES
 	;;
 esac
 done
