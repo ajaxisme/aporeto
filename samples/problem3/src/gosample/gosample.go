@@ -18,13 +18,15 @@ func readURL(url string) string {
 	resp, err := http.Get(url)
 	if err != nil {
 		// URL Error 
-		os.Exit(1)
+        panic(err)
+        os.Exit(1)
 	}	
 	
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// Read error
+        panic(err)
 		os.Exit(1)
 	}	
 
@@ -82,12 +84,12 @@ func (urls *stringslice) Set(value string) error {
    return nil
 }
 
-var urls stringslice
 
 func main() {
 
-	//default_url := "https://raw.githubusercontent.com/aporeto-inc/internship2016/master/samples/problem2/uniquified_file.txt"
+    //default_url := "https://raw.githubusercontent.com/aporeto-inc/internship2016/master/samples/problem2/uniquified_file.txt"
 
+    var urls stringslice
     flag.Var(&urls, "urls", "Comma-separated urls")
     flag.Parse()
 
