@@ -1,12 +1,16 @@
 package main
 
 import (
+    "flag"
 	"fmt"
-	"net/http"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"regexp"
+    "strings"
 )
+
+type stringslice []string
 
 func readURL(url string) string {
 	// Read the URL and return body contents
@@ -44,26 +48,57 @@ func count_words (words []string) map[string]int {
 	return word_counts
 }
 
-func write_to_file (word_counts map[string]int, filename string) {
+func write_to_file (word_counts map[string]int, filename string, url string) {
 
-	f, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND, 0600)
+	f, err := os.Create(filename)
 	if err != nil {
 		panic(err)
 	}
 
 	defer f.Close()
 
+    write_content := fmt.Sprintf("url: %s\n", url)
 	for word, word_count := range word_counts {
-		if _, err = f.WriteString("%v %v\n", word, word_count); err != nil {
-			panic(err)
-		}
-		//fmt.Printf("%v %v\n", word, word_count)
+        s := fmt.Sprintf("\t%s %d\n", word, word_count)
+        write_content = write_content + s
 	}
+
+    n, err := f.WriteString(write_content)
+    if err != nil {
+        panic(err)
+    }
+
+    _ = n
+
 }
 
-func main() {
-	url := "https://raw.githubusercontent.com/aporeto-inc/internship2016/master/samples/problem2/uniquified_file.txt"
+func (urls *stringslice) String() string {
+    return fmt.Sprintf("%s", *urls)
+}
 
-	content := readURL(url)
-	write_to_file(count_words(get_words(content)), "output")	
+func (urls *stringslice) Set(value string) error {
+   *urls = strings.Split(value, ",")
+
+   return nil
+}
+
+var urls stringslice
+
+func main() {
+
+	//default_url := "https://raw.githubusercontent.com/aporeto-inc/internship2016/master/samples/problem2/uniquified_file.txt"
+
+    flag.Var(&urls, "urls", "Comma-separated urls")
+    flag.Parse()
+
+    if flag.NFlag() == 0 {
+        flag.PrintDefaults()
+        os.Exit(1)
+    }
+
+    for i, url := range urls {
+	    content := readURL(url)
+        filename := fmt.Sprintf("url%d.txt",i+1)
+	    write_to_file(count_words(get_words(content)), filename, url)	
+    }
 }
