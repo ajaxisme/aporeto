@@ -20,8 +20,8 @@ class Uniquify:
 	def remove_duplicates(self):
 		# Open inputfile, check for uniqueness, write to output
 	    for line in self.infd:
-			if not self.already_seen(line):
-				self.write_to_output(line)
+		    if not self.already_seen(line):
+			    self.write_to_output(line)
 
 	def already_seen(self, line):
 		# Calculate hash of line, check if already seen, return boolean
