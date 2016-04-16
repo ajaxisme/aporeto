@@ -1,4 +1,14 @@
 #!/usr/bin/python
+""" Program to read a file line by line and Remove duplicates
+and write back to another file.
+
+Approach Used:
+1. Read input file one line at a time
+2. Compute hash of the line
+3. Check for computed hash in hash table:
+	a. If hash present, move to next line
+	b. If not present, write line to output file, add hash to hash table
+"""
 from optparse import OptionParser
 import hashlib
 
@@ -20,8 +30,10 @@ class Uniquify:
 	def remove_duplicates(self):
 		# Open inputfile, check for uniqueness, write to output
 	    for line in self.infd:
-		    if not self.already_seen(line):
-			    self.write_to_output(line)
+			# Replacing "\r\n" or "\r" by "\n"
+			line = line.replace("\r\n", "\n").replace("\r", "\n")
+			if not self.already_seen(line):
+				self.write_to_output(line)
 
 	def already_seen(self, line):
 		# Calculate hash of line, check if already seen, return boolean
