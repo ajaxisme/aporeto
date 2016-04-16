@@ -2,13 +2,14 @@
 
 USAGE="Usage: $(basename "$0") --create-filename=<filename> [--no-prompt] [--verbose]"
 
-INVALID=NO #Show usage prompt
+INVALID=YES #Show usage prompt
 VERBOSE=NO #Default
 for i in "$@"
 do
 case $i in
 	--create-file=*)
 	FILENAME="${i#*=}"
+    INVALID=NO
 	shift
 	;;
 	--no-prompt)
@@ -21,10 +22,11 @@ case $i in
 	;;
 	--help|-h)
 	HELP=YES
+    INVALID=NO
 	shift
 	;;
 	*)
-    INVALID=YES
+
 	;;
 esac
 done
@@ -46,14 +48,19 @@ if [ "$HELP" = "YES" ]; then
 	exit 0
 fi
 
+# Hardcode all states to a list
 STATES=( Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada 'New Hampshire' 'New Jersey' 'New Mexico' 'New York' 'North Carolina' 'North Dakota' Ohio Oklahoma Oregon Pennsylvania 'Rhode Island' 'South Carolina' 'South Dakota' Tennessee Texas Utah Vermont Virginia Washington 'West Virginia' Wisconsin Wyoming )
 
 function write_to_file {
+    # Function that writes to the output file
 	if [ "$1" = "YES" ]; then
 		echo "File removed"
 	fi
 
-	echo "New file created"
+	if [ "$VERBOSE" = "YES" ]; then
+	    echo "New file created"
+    fi
+
 	( IFS=$'\n'; echo "${STATES[*]}" ) > $FILENAME # Write states to file line by line
 	exit 0
 }
