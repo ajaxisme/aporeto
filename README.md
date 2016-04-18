@@ -5,10 +5,12 @@
 
 ## Uniquify - Python
 #### Implementation
-1. Read a line from the textfile
-2. Generate a hash of the line
-3. If hash already in hash_table: move to 4, else write the line to output, add hash to hash_table
-4. Repeat 1-3 till all lines are read
+#### For O(1) lookup and accuracy, using a dictionary to store lines as key
+#### Only thing we will be compromising on would be the order which is not restored
+1. Read a line from the input file
+2. If line already in dictionary: move to 4, else add line as key to dictionary
+3. Repeat 1-2 till all lines are read
+4. Write all keys in the dictionary to output file
 
 ## Word Count - Go
 #### Implementation done for serial execution
