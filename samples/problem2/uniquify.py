@@ -29,11 +29,13 @@ class Uniquify:
 
 	def remove_duplicates(self):
 		# Open inputfile, check for uniqueness, write to output
-	    for line in self.infd:
-			# Replacing "\r\n" or "\r" by "\n"
-			line = line.replace("\r\n", "\n").replace("\r", "\n")
-			if not self.already_seen(line):
-				self.write_to_output(line)
+	    for lines in self.infd:
+			# Replacing "\r\n" or "\r" by "\n" and treating them as separated \n
+            # terminated lines
+			lines = lines.replace("\r", "\n").split("\n")
+			for line in lines:
+			     if len(line) != 0 and not self.already_seen(line):
+			         self.write_to_output(line)
 
 	def already_seen(self, line):
 		# Calculate hash of line, check if already seen, return boolean
@@ -47,8 +49,8 @@ class Uniquify:
 	def write_to_output(self, line):
 		# write contents to outputfile
 		if self.verbose:
-			print "Writing: %s"%line
-		self.outfd.write(line)
+			print "Writing: %s\n"%line
+		self.outfd.write(line + "\n")
 
 	def __del__(self):
 		# Destructor, close file descriptors
